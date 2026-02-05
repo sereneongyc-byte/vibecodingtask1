@@ -13,6 +13,7 @@ const themeToggle = document.getElementById('theme-toggle');
 
 const uploadBtn = document.getElementById('uploadBtn');
 const cameraBtn = document.getElementById('cameraBtn');
+const feedbackBtn = document.getElementById('feedbackBtn');
 const cameraView = document.getElementById('cameraView');
 const video = document.getElementById('video');
 const captureBtn = document.getElementById('captureBtn');
@@ -26,6 +27,8 @@ const wordList = document.getElementById('wordList');
 const confirmWordsBtn = document.getElementById('confirmWordsBtn');
 const retryExtractionBtn = document.getElementById('retryExtractionBtn');
 const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+const feedbackForm = document.getElementById('feedbackForm');
+const cancelFeedbackBtn = document.getElementById('cancelFeedbackBtn');
 
 let words = [];
 let userAnswers = [];
@@ -48,6 +51,16 @@ themeToggle.addEventListener('click', () => {
     document.body.classList.toggle('night-mode');
     const isNightMode = document.body.classList.contains('night-mode');
     localStorage.setItem('nightMode', isNightMode);
+});
+
+feedbackBtn.addEventListener('click', () => {
+    mainPage.style.display = 'none';
+    feedbackForm.style.display = 'block';
+});
+
+cancelFeedbackBtn.addEventListener('click', () => {
+    mainPage.style.display = 'block';
+    feedbackForm.style.display = 'none';
 });
 
 clearHistoryBtn.addEventListener('click', () => {
