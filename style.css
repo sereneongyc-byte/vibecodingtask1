@@ -123,3 +123,7 @@ th {
 body.night-mode th {
     background-color: #505050;
 }
+
+.crossed-out {
+    text-decoration: line-through;
+}

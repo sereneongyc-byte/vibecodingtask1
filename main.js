@@ -25,6 +25,7 @@ const confirmationArea = document.getElementById('confirmationArea');
 const wordList = document.getElementById('wordList');
 const confirmWordsBtn = document.getElementById('confirmWordsBtn');
 const retryExtractionBtn = document.getElementById('retryExtractionBtn');
+const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 
 let words = [];
 let userAnswers = [];
@@ -49,6 +50,13 @@ themeToggle.addEventListener('click', () => {
     localStorage.setItem('nightMode', isNightMode);
 });
 
+clearHistoryBtn.addEventListener('click', () => {
+    if (confirm("Are you sure you want to clear all past test history? This action cannot be undone.")) {
+        localStorage.removeItem('pastSpellingTests');
+        loadAndDisplayPastTests();
+    }
+});
+
 function getPastTests() {
     let pastTests = JSON.parse(localStorage.getItem('pastSpellingTests')) || [];
     // Migration for very old data structure: array of word arrays
@@ -68,6 +76,7 @@ function loadAndDisplayPastTests() {
     const pastTests = getPastTests();
     pastTestsContainer.innerHTML = '';
     if (pastTests.length > 0) {
+        clearHistoryBtn.style.display = 'block';
         const title = document.createElement('h2');
         title.textContent = 'Past Tests';
         pastTestsContainer.appendChild(title);
@@ -86,6 +95,8 @@ function loadAndDisplayPastTests() {
             `;
             pastTestsContainer.appendChild(testDiv);
         });
+    } else {
+        clearHistoryBtn.style.display = 'none';
     }
 }
 
@@ -234,10 +245,23 @@ startBtn.addEventListener('click', async () => {
 function showWordConfirmation(words) {
     wordList.innerHTML = '';
     words.forEach(word => {
+        const wordWrapper = document.createElement('div');
+        wordWrapper.className = 'word-wrapper';
+
         const input = document.createElement('input');
         input.type = 'text';
         input.value = word;
-        wordList.appendChild(input);
+
+        const crossOutBtn = document.createElement('button');
+        crossOutBtn.textContent = 'X';
+        crossOutBtn.className = 'cross-out-btn';
+        crossOutBtn.addEventListener('click', () => {
+            input.classList.toggle('crossed-out');
+        });
+
+        wordWrapper.appendChild(input);
+        wordWrapper.appendChild(crossOutBtn);
+        wordList.appendChild(wordWrapper);
     });
     confirmationArea.style.display = 'block';
 }
@@ -246,9 +270,11 @@ confirmWordsBtn.addEventListener('click', () => {
     const confirmedWords = [];
     const inputs = wordList.getElementsByTagName('input');
     for (let input of inputs) {
-        const word = input.value.trim();
-        if (word) {
-            confirmedWords.push(word);
+        if (!input.classList.contains('crossed-out')) {
+            const word = input.value.trim();
+            if (word) {
+                confirmedWords.push(word);
+            }
         }
     }
 
@@ -257,7 +283,7 @@ confirmWordsBtn.addEventListener('click', () => {
         startGame(confirmedWords);
         confirmationArea.style.display = 'none';
     } else {
-        status.textContent = "Please enter at least one word.";
+        status.textContent = "Please confirm at least one word.";
     }
 });
 
