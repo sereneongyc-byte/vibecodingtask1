@@ -46,8 +46,14 @@ themeToggle.addEventListener('click', () => {
 
 function getPastTests() {
     let pastTests = JSON.parse(localStorage.getItem('pastSpellingTests')) || [];
+    // Migration for very old data structure: array of word arrays
     if (pastTests.length > 0 && Array.isArray(pastTests[0])) {
-        pastTests = pastTests.map(wordList => ({ words: wordList, lastAnswers: [] }));
+        pastTests = pastTests.map(wordList => ({ words: wordList, lastAnswers: [], timeTaken: null }));
+        localStorage.setItem('pastSpellingTests', JSON.stringify(pastTests));
+    }
+    // Migration for old data structure: array of objects without timeTaken
+    else if (pastTests.length > 0 && !pastTests[0].hasOwnProperty('timeTaken')) {
+        pastTests = pastTests.map(test => ({ ...test, timeTaken: null }));
         localStorage.setItem('pastSpellingTests', JSON.stringify(pastTests));
     }
     return pastTests;
@@ -89,7 +95,7 @@ pastTestsContainer.addEventListener('click', (event) => {
         const testIndex = event.target.dataset.testIndex;
         const testToReview = pastTests[testIndex];
         mainPage.style.display = 'none';
-        displayResultsTable(testToReview.words, testToReview.lastAnswers);
+        displayResultsTable(testToReview.words, testToReview.lastAnswers, testToReview.timeTaken);
         resultsArea.style.display = 'block';
         newTestBtn.style.display = 'block';
     }
@@ -223,16 +229,17 @@ function saveTest(wordList) {
     const pastTests = getPastTests();
     const isDuplicate = pastTests.some(test => JSON.stringify(test.words) === JSON.stringify(wordList));
     if (!isDuplicate) {
-        pastTests.push({ words: wordList, lastAnswers: [] });
+        pastTests.push({ words: wordList, lastAnswers: [], timeTaken: null });
         localStorage.setItem('pastSpellingTests', JSON.stringify(pastTests));
     }
 }
 
-function saveLatestAnswers(wordList, answerList) {
+function saveLatestTestResult(wordList, answerList, timeTaken) {
     const pastTests = getPastTests();
     const testIndex = pastTests.findIndex(test => JSON.stringify(test.words) === JSON.stringify(wordList));
     if (testIndex !== -1) {
         pastTests[testIndex].lastAnswers = answerList;
+        pastTests[testIndex].timeTaken = timeTaken;
         localStorage.setItem('pastSpellingTests', JSON.stringify(pastTests));
     }
 }
@@ -313,14 +320,13 @@ function displayResults() {
     const seconds = totalSeconds % 60;
     const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
-    saveLatestAnswers(words, userAnswers);
-    displayResultsTable(words, userAnswers);
-    resultsArea.innerHTML += `<p>Time taken: ${formattedTime}</p>`; // Add time taken to results
+    saveLatestTestResult(words, userAnswers, formattedTime);
+    displayResultsTable(words, userAnswers, formattedTime);
     loadAndDisplayPastTests();
     timerDisplay.textContent = '00:00'; // Reset timer display
 }
 
-function displayResultsTable(wordList, answerList) {
+function displayResultsTable(wordList, answerList, timeTaken) {
     let score = 0;
     let table = '<table><tr><th>Original Word</th><th>Your Answer</th><th>Result</th></tr>';
 
@@ -335,7 +341,11 @@ function displayResultsTable(wordList, answerList) {
     }
 
     table += '</table>';
-    resultsArea.innerHTML = `<h2>Results</h2><p>Your score: ${score}/${wordList.length}</p>${table}`;
+    let timeTakenHTML = '';
+    if (timeTaken) {
+        timeTakenHTML = `<p>Time taken: ${timeTaken}</p>`;
+    }
+    resultsArea.innerHTML = `<h2>Results</h2><p>Your score: ${score}/${wordList.length}</p>${timeTakenHTML}${table}`;
 }
 
 function updateTimerDisplay() {
