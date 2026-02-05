@@ -188,7 +188,7 @@ function resetImageSelection() {
     hideCamera();
 }
 
-startBtn.addEventListener('click', () => {
+startBtn.addEventListener('click', async () => {
     if (imageForTesseract) {
         status.textContent = 'Recognizing words in the image...';
         uploadBtn.style.display = 'none';
@@ -197,11 +197,12 @@ startBtn.addEventListener('click', () => {
         startBtn.style.display = 'none';
         pastTestsContainer.style.display = 'none';
 
-        Tesseract.recognize(
-            imageForTesseract,
-            'eng',
-            { logger: m => console.log(m) }
-        ).then(({ data: { text } }) => {
+        try {
+            const { data: { text } } = await Tesseract.recognize(
+                imageForTesseract,
+                'eng',
+                { logger: m => console.log(m) }
+            );
             status.textContent = '';
             const newWords = text.trim().split(/\s+/).filter(w => w.length > 0);
             if (newWords.length > 0) {
@@ -209,21 +210,22 @@ startBtn.addEventListener('click', () => {
                 startGame(newWords);
             } else {
                 status.textContent = 'Could not find any words in the image. Please try again.';
-                uploadBtn.style.display = 'inline-block';
-                cameraBtn.style.display = 'inline-block';
-                startBtn.style.display = 'inline-block';
-                pastTestsContainer.style.display = 'block';
+                resetUI();
             }
-        }).catch(err => {
+        } catch (err) {
             console.error(err);
-            status.textContent = 'An error occurred during word recognition.';
-            uploadBtn.style.display = 'inline-block';
-            cameraBtn.style.display = 'inline-block';
-            startBtn.style.display = 'inline-block';
-            pastTestsContainer.style.display = 'block';
-        });
+            status.textContent = `An error occurred during word recognition: ${err.message}`;
+            resetUI();
+        }
     }
 });
+
+function resetUI() {
+    uploadBtn.style.display = 'inline-block';
+    cameraBtn.style.display = 'inline-block';
+    startBtn.style.display = 'inline-block';
+    pastTestsContainer.style.display = 'block';
+}
 
 function saveTest(wordList) {
     const pastTests = getPastTests();
