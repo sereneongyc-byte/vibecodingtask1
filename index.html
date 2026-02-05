@@ -8,17 +8,35 @@
 </head>
 <body>
     <div class="container">
-        <h1>Spelling Bee</h1>
-        <p>Upload an image with a list of words to start the spelling bee.</p>
-        <input type="file" id="imageInput" accept="image/*">
-        <button id="startBtn" disabled>Start Spelling Bee</button>
-        <p id="status"></p>
+        <div class="header-container">
+            <h1>Spelling Bee</h1>
+            <button id="theme-toggle">Toggle Theme</button>
+        </div>
+        <div id="mainPage">
+            <p>Upload an image with a list of words to start the spelling bee.</p>
+            <button id="uploadBtn">Upload from device</button>
+            <button id="cameraBtn">Take a picture</button>
+            <input type="file" id="imageInput" accept="image/*" style="display:none">
+            <div id="cameraView" style="display: none;">
+                <video id="video" autoplay playsinline style="width: 100%;"></video>
+                <button id="captureBtn">Capture</button>
+                <div id="cameraError" style="display: none; text-align: center; margin-top: 10px;">
+                    <p id="cameraErrorText"></p>
+                    <button id="cameraErrorBackBtn">Go Back</button>
+                </div>
+            </div>
+            <img id="capturedImage" style="display: none; max-width: 100%; margin-top: 10px;"/>
+            <button id="startBtn" disabled>Start Spelling Bee</button>
+            <p id="status"></p>
+            <div id="pastTests"></div>
+        </div>
         <div id="gameArea" style="display: none;">
             <audio id="audioPlayer" controls></audio>
             <input type="text" id="wordInput" placeholder="Type the word you hear">
             <button id="submitBtn">Submit</button>
         </div>
         <div id="resultsArea" style="display: none;"></div>
+        <button id="newTestBtn" style="display: none;">Start New Test</button>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2/dist/tesseract.min.js"></script>
     <script src="main.js"></script>

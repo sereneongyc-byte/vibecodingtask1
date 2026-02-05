@@ -1,29 +1,125 @@
 body {
     font-family: sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    margin: 20px;
     background-color: #f0f0f0;
+    color: #333;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.night-mode {
+    background-color: #333;
+    color: #f0f0f0;
 }
 
 .container {
-    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background-color 0.3s;
 }
 
-#gameArea {
-    margin-top: 20px;
+body.night-mode .container {
+    background-color: #424242;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-#audioPlayer {
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    margin: 0;
+}
+
+button, input[type="text"] {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+button {
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+button:disabled {
+    background-color: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed;
+}
+
+body.night-mode button {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+body.night-mode button:disabled {
+    background-color: #555;
+    border-color: #555;
+}
+
+#theme-toggle {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+body.night-mode #theme-toggle {
+    background-color: #f8f9fa;
+    color: #333;
+    border-color: #f8f9fa;
+}
+
+input[type="text"] {
+    width: calc(100% - 22px);
     margin-bottom: 10px;
 }
 
-#wordInput {
-    padding: 10px;
-    width: 200px;
+body.night-mode input[type="text"] {
+    background-color: #555;
+    color: #f0f0f0;
+    border-color: #666;
 }
 
-#submitBtn {
+.past-test {
     padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+body.night-mode .past-test {
+    border-color: #555;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+body.night-mode th, body.night-mode td {
+    border-bottom: 1px solid #555;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+body.night-mode th {
+    background-color: #505050;
 }
