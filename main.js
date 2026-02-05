@@ -26,6 +26,10 @@ let userAnswers = [];
 let currentWordIndex = 0;
 let imageForTesseract = null;
 
+let startTime;
+let timerInterval;
+const timerDisplay = document.getElementById('timerDisplay');
+
 document.addEventListener('DOMContentLoaded', () => {
     loadAndDisplayPastTests();
     const isNightMode = localStorage.getItem('nightMode') === 'true';
@@ -243,6 +247,10 @@ function startGame(wordList) {
     resultsArea.style.display = 'none';
     newTestBtn.style.display = 'none';
 
+    startTime = Date.now();
+    updateTimerDisplay(); // Display 00:00 immediately
+    timerInterval = setInterval(updateTimerDisplay, 1000);
+
     nextWord();
 }
 
@@ -297,9 +305,19 @@ function displayResults() {
     resultsArea.style.display = 'block';
     newTestBtn.style.display = 'block';
 
+    clearInterval(timerInterval);
+    const endTime = Date.now();
+    const elapsedTime = endTime - startTime;
+    const totalSeconds = Math.floor(elapsedTime / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
     saveLatestAnswers(words, userAnswers);
     displayResultsTable(words, userAnswers);
+    resultsArea.innerHTML += `<p>Time taken: ${formattedTime}</p>`; // Add time taken to results
     loadAndDisplayPastTests();
+    timerDisplay.textContent = '00:00'; // Reset timer display
 }
 
 function displayResultsTable(wordList, answerList) {
@@ -318,4 +336,14 @@ function displayResultsTable(wordList, answerList) {
 
     table += '</table>';
     resultsArea.innerHTML = `<h2>Results</h2><p>Your score: ${score}/${wordList.length}</p>${table}`;
+}
+
+function updateTimerDisplay() {
+    const elapsedTime = Date.now() - startTime;
+    const totalSeconds = Math.floor(elapsedTime / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    timerDisplay.textContent = formattedTime;
 }
