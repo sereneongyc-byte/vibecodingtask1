@@ -21,6 +21,11 @@ const cameraError = document.getElementById('cameraError');
 const cameraErrorText = document.getElementById('cameraErrorText');
 const cameraErrorBackBtn = document.getElementById('cameraErrorBackBtn');
 
+const confirmationArea = document.getElementById('confirmationArea');
+const wordList = document.getElementById('wordList');
+const confirmWordsBtn = document.getElementById('confirmWordsBtn');
+const retryExtractionBtn = document.getElementById('retryExtractionBtn');
+
 let words = [];
 let userAnswers = [];
 let currentWordIndex = 0;
@@ -213,8 +218,7 @@ startBtn.addEventListener('click', async () => {
             status.textContent = '';
             const newWords = text.trim().split(/\s+/).filter(w => w.length > 0);
             if (newWords.length > 0) {
-                saveTest(newWords);
-                startGame(newWords);
+                showWordConfirmation(newWords);
             } else {
                 status.textContent = 'Could not find any words in the image. Please try again.';
                 resetUI();
@@ -227,11 +231,49 @@ startBtn.addEventListener('click', async () => {
     }
 });
 
+function showWordConfirmation(words) {
+    wordList.innerHTML = '';
+    words.forEach(word => {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = word;
+        wordList.appendChild(input);
+    });
+    confirmationArea.style.display = 'block';
+}
+
+confirmWordsBtn.addEventListener('click', () => {
+    const confirmedWords = [];
+    const inputs = wordList.getElementsByTagName('input');
+    for (let input of inputs) {
+        const word = input.value.trim();
+        if (word) {
+            confirmedWords.push(word);
+        }
+    }
+
+    if (confirmedWords.length > 0) {
+        saveTest(confirmedWords);
+        startGame(confirmedWords);
+        confirmationArea.style.display = 'none';
+    } else {
+        status.textContent = "Please enter at least one word.";
+    }
+});
+
+retryExtractionBtn.addEventListener('click', () => {
+    confirmationArea.style.display = 'none';
+    resetImageSelection();
+    resetUI();
+});
+
+
 function resetUI() {
     uploadBtn.style.display = 'inline-block';
     cameraBtn.style.display = 'inline-block';
     startBtn.style.display = 'inline-block';
     pastTestsContainer.style.display = 'block';
+    startBtn.disabled = true; // Disable start until a new image is selected
 }
 
 function saveTest(wordList) {
@@ -262,6 +304,7 @@ function startGame(wordList) {
     gameArea.style.display = 'block';
     resultsArea.style.display = 'none';
     newTestBtn.style.display = 'none';
+    confirmationArea.style.display = 'none';
 
     startTime = Date.now();
     updateTimerDisplay(); // Display 00:00 immediately
@@ -292,6 +335,7 @@ newTestBtn.addEventListener('click', () => {
     newTestBtn.style.display = 'none';
     resetImageSelection();
     loadAndDisplayPastTests();
+    startBtn.disabled = true; // Re-disable start button
 });
 
 function speakWord(word) {
