@@ -1,9 +1,29 @@
 body {
+    font-family: sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    margin: 0;
-    font-family: sans-serif;
-    background: linear-gradient(to right, #6dd5ed, #2193b0);
+    background-color: #f0f0f0;
+}
+
+.container {
+    text-align: center;
+}
+
+#gameArea {
+    margin-top: 20px;
+}
+
+#audioPlayer {
+    margin-bottom: 10px;
+}
+
+#wordInput {
+    padding: 10px;
+    width: 200px;
+}
+
+#submitBtn {
+    padding: 10px;
 }
