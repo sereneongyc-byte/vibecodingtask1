@@ -117,8 +117,15 @@ cameraBtn.addEventListener('click', async () => {
     uploadBtn.style.display = 'none';
     cameraBtn.style.display = 'none';
 
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const videoConstraints = {
+        video: {
+            facingMode: isMobile ? { exact: 'environment' } : 'user'
+        }
+    };
+
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia(videoConstraints);
         video.srcObject = stream;
         video.play();
         video.style.display = 'block';
