@@ -52,14 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadBtn.addEventListener('click', () => imageInput.click());
 
     cameraBtn.addEventListener('click', () => {
-        mainPage.style.display = 'none';
+        uploadOptions.style.display = 'none';
         cameraView.style.display = 'block';
         startCamera();
     });
 
     cameraBackBtn.addEventListener('click', () => {
         cameraView.style.display = 'none';
-        mainPage.style.display = 'block';
         uploadOptions.style.display = 'flex';
         stopCamera();
     });
@@ -165,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         capturedImage.style.display = 'block';
         stopCamera();
         cameraView.style.display = 'none';
-        mainPage.style.display = 'block';
+        uploadOptions.style.display = 'flex';
         startBtn.disabled = false;
     });
 
