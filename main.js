@@ -133,18 +133,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Camera Logic ---
     function startCamera() {
+        const constraints = {
+            video: {
+                facingMode: 'environment' // Prefer the rear camera
+            }
+        };
+
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true })
+            navigator.mediaDevices.getUserMedia(constraints)
                 .then(stream => {
                     video.srcObject = stream;
                     video.play();
                 })
                 .catch(err => {
-                    console.error('Error accessing camera: ', err);
-                    cameraErrorText.textContent = 'Could not access the camera. Please ensure you have a camera connected and have granted permission.';
-                    cameraView.style.display = 'none';
-                    cameraError.style.display = 'block';
+                    console.error('Error with rear camera, trying any camera: ', err);
+                    // Fallback to any camera if the rear camera is not available
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(stream => {
+                            video.srcObject = stream;
+                            video.play();
+                        })
+                        .catch(finalErr => {
+                            console.error('Error accessing any camera: ', finalErr);
+                            cameraErrorText.textContent = 'Could not access the camera. Please ensure you have a camera connected and have granted permission.';
+                            cameraView.style.display = 'none';
+                            cameraError.style.display = 'block';
+                        });
                 });
+        } else {
+            cameraErrorText.textContent = 'Your browser does not support camera access.';
+            cameraView.style.display = 'none';
+            cameraError.style.display = 'block';
         }
     }
 
