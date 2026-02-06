@@ -78,17 +78,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     startBtn.addEventListener('click', () => {
         status.textContent = 'Recognizing text...';
-        Tesseract.recognize(
-            capturedImage.src,
-            'eng',
-            {
-                logger: m => console.log(m)
-            }
-        ).then(({ data: { text } }) => {
-            words = text.split(/\s+/).filter(word => word.length > 1);
-            status.textContent = 'Text recognized!';
-            displayWordConfirmation(words);
-        });
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        const image = new Image();
+        image.onload = () => {
+            canvas.width = image.width;
+            canvas.height = image.height;
+            context.drawImage(image, 0, 0);
+            context.putImageData(toGrayscale(context.getImageData(0, 0, canvas.width, canvas.height)), 0, 0);
+            Tesseract.recognize(
+                canvas,
+                'eng',
+                {
+                    logger: m => console.log(m),
+                    tessedit_char_whitelist: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                }
+            ).then(({ data: { text } }) => {
+                words = text.split(/\s+/).filter(word => word.length > 1);
+                status.textContent = 'Text recognized!';
+                displayWordConfirmation(words);
+            });
+        };
+        image.src = capturedImage.src;
     });
 
     confirmWordsBtn.addEventListener('click', () => {
@@ -191,6 +202,18 @@ document.addEventListener('DOMContentLoaded', () => {
         cameraError.style.display = 'none';
         mainPage.style.display = 'block';
     });
+
+    // --- Image Preprocessing ---
+    function toGrayscale(imageData) {
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+            const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+            data[i] = avg; // red
+            data[i + 1] = avg; // green
+            data[i + 2] = avg; // blue
+        }
+        return imageData;
+    }
 
     // --- Game Logic ---
     function startTest() {
