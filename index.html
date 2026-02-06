@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spelling Mummy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,17 +14,22 @@
             <h1>Spelling Mummy</h1>
             <div>
                 <button id="feedbackBtn">Feedback</button>
-                <button id="theme-toggle">Toggle Theme</button>
             </div>
         </div>
         <div id="mainPage">
-            <p>Upload an image with a list of words to start the spelling test.</p>
-            <button id="uploadBtn">Upload from device</button>
-            <button id="cameraBtn">Take a picture</button>
+            <div class="start-container">
+                <p>Get your spelling words ready!</p>
+                <button id="getStartedBtn">Get Started</button>
+            </div>
+            <div class="upload-options" style="display: none;">
+                <button id="uploadBtn">Upload from device</button>
+                <button id="cameraBtn">Take a picture</button>
+            </div>
             <input type="file" id="imageInput" accept="image/*" style="display:none">
             <div id="cameraView" style="display: none;">
                 <video id="video" autoplay playsinline style="width: 100%;"></video>
                 <button id="captureBtn">Capture</button>
+                <button id="cameraBackBtn" class="back-btn">Back</button>
                 <div id="cameraError" style="display: none; text-align: center; margin-top: 10px;">
                     <p id="cameraErrorText"></p>
                     <button id="cameraErrorBackBtn">Go Back</button>
@@ -35,22 +42,26 @@
                 <h3>Are these your words?</h3>
                 <div id="wordList"></div>
                 <button id="confirmWordsBtn">Confirm and Start</button>
-                <button id="retryExtractionBtn">Try Again</button>
+                <button id="backToUploadBtn">Back</button>
             </div>
             <div id="pastTests"></div>
             <button id="clearHistoryBtn" style="display: none;">Clear History</button>
         </div>
         <div id="gameArea" style="display: none;">
-            <audio id="audioPlayer" controls></audio>
             <div id="timerDisplay" class="timer">00:00</div>
-            <input type="text" id="wordInput" placeholder="Type the word you hear">
+            <div class="word-input-container">
+                <input type="text" id="wordInput" placeholder="Type the word you hear">
+                <button id="replayBtn"><i class="fas fa-redo"></i></button>
+                <span id="feedbackIcon"></span>
+            </div>
             <button id="submitBtn">Submit</button>
+            <button id="gameBackBtn" class="back-btn">Back</button>
         </div>
         <div id="resultsArea" style="display: none;">
             <h2>Test Results</h2>
             <p>Total Time: <span id="totalTimeTaken"></span></p>
+            <button id="backToStartBtn">Back to Start</button>
         </div>
-        <button id="newTestBtn" style="display: none;">Start New Test</button>
 
         <!-- Feedback Form -->
         <div id="feedbackForm" style="display: none;">
@@ -63,7 +74,7 @@
                 <label for="feedbackMessage">Your Message:</label>
                 <textarea id="feedbackMessage" name="message" required></textarea>
                 <button type="submit">Send Feedback</button>
-                <button type="button" id="cancelFeedbackBtn">Cancel</button>
+                <button type="button" id="cancelFeedbackBtn" class="back-btn">Cancel</button>
             </form>
         </div>
     </div>
